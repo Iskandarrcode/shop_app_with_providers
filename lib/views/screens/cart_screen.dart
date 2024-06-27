@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lesson64_statemanagement/controllers/cart_controller.dart';
 import 'package:lesson64_statemanagement/models/product.dart';
+import 'package:lesson64_statemanagement/views/screens/shopping_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/product_item.dart';
@@ -34,16 +36,40 @@ class CartScreen extends StatelessWidget {
               },
             ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        shape: const RoundedRectangleBorder(),
-        onPressed: () {},
-        label: Text(
-          "\$${cartController.cart.totalPrice}",
-          style: const TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.extended(
+            shape: const RoundedRectangleBorder(),
+            onPressed: () {},
+            label: Text(
+              "\$${cartController.cart.totalPrice}",
+              style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
+          const SizedBox(height: 10),
+          FloatingActionButton.extended(
+            shape: const RoundedRectangleBorder(),
+            onPressed: () {
+              Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (BuildContext context) => const ShoppingScreen(),
+              ),
+            );
+            },
+            label: const Text(
+              "Shoping",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

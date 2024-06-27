@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:lesson64_statemanagement/controllers/products_controller.dart';
 import 'package:lesson64_statemanagement/models/product.dart';
 import 'package:provider/provider.dart';
 
 class AddProductAlertDialog extends StatefulWidget {
-  const AddProductAlertDialog({super.key});
+  final bool isAdd;
+  final Product? product;
+  const AddProductAlertDialog({
+    super.key,
+    required this.isAdd,
+    this.product,
+  });
 
   @override
   State<AddProductAlertDialog> createState() => _AddProductAlertDialogState();
@@ -14,26 +21,59 @@ class _AddProductAlertDialogState extends State<AddProductAlertDialog> {
   final TextEditingController coursePrice = TextEditingController();
 
   bool isLoading = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.isAdd && widget.product != null) {
+      courseTitle.text = widget.product!.title;
+      coursePrice.text = widget.product!.price.toString();
+    }
+  }
+
+  void onSaveTapped(ProductsController productController) {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      if (widget.isAdd == false) {
+        productController.editProduct(
+          widget.product!.id,
+          courseTitle.text,
+          int.parse(coursePrice.text),
+        );
+      } else {
+        productController.addProduct(Product(
+          id: UniqueKey().toString(),
+          color: Colors.grey,
+          title: courseTitle.text,
+          price: int.parse(coursePrice.text),
+        ));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final product = Provider.of<Product>(context, listen: false);
-
+    ProductsController productsController =
+        Provider.of<ProductsController>(context);
     return SingleChildScrollView(
       child: AlertDialog(
         backgroundColor: const Color.fromARGB(173, 20, 31, 83),
-        title: const Text("Add Products"),
+        title: widget.isAdd
+            ? const Text("Add Products")
+            : const Text("Edit Products"),
         content: Form(
+          key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
                 controller: courseTitle,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  label: Text(
-                    "Course Title",
-                  ),
+                decoration: InputDecoration(
+                  label: widget.isAdd
+                      ? const Text("Title")
+                      : const Text("New Title"),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -45,10 +85,10 @@ class _AddProductAlertDialogState extends State<AddProductAlertDialog> {
               TextFormField(
                 controller: coursePrice,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  label: Text(
-                    "Course Price",
-                  ),
+                decoration: InputDecoration(
+                  label: widget.isAdd
+                      ? const Text("Price")
+                      : const Text("New Price"),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -70,16 +110,17 @@ class _AddProductAlertDialogState extends State<AddProductAlertDialog> {
             ),
           ),
           ElevatedButton(
-            onPressed: () async {
-              if (courseTitle.text.isNotEmpty && coursePrice.text.isNotEmpty) {
-                Navigator.pop(context, true);
-              }
+            onPressed: () {
+              onSaveTapped(productsController);
+              Navigator.of(context).pop();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
             ),
-            child: const Text("Qo'shish"),
+            child: widget.isAdd
+                ? const Text("Qo'shish")
+                : const Text("O'zgartrish"),
           )
         ],
       ),

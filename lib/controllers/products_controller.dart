@@ -2,17 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lesson64_statemanagement/models/product.dart';
 
 class ProductsController extends ChangeNotifier {
-  final Product _product = Product(
-    id: "",
-    title: "",
-    color: Colors.black,
-    price: 0,
-  );
-
-  Product get product {
-    return _product;
-  }
-
   final List<Product> _list = [
     Product(
       id: UniqueKey().toString(),
@@ -46,7 +35,12 @@ class ProductsController extends ChangeNotifier {
   void editProduct(String productId, String newTitle, int newPrice) {
     int index = _list.indexWhere((element) => element.id == productId);
     if (index != -1) {
-      _list[index].updateProduct(newTitle, newPrice);
+      _list[index] = Product(
+        id: _list[index].id,
+        title: newTitle,
+        color: _list[index].color,
+        price: newPrice,
+      );
     }
     notifyListeners();
   }

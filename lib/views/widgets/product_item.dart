@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lesson64_statemanagement/controllers/cart_controller.dart';
+import 'package:lesson64_statemanagement/controllers/products_controller.dart';
 import 'package:lesson64_statemanagement/models/product.dart';
+import 'package:lesson64_statemanagement/views/widgets/addProducts.dart';
 import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
@@ -44,11 +46,43 @@ class ProductItem extends StatelessWidget {
                     ),
                   ],
                 )
-              : IconButton(
-                  onPressed: () {
-                    controller.addToCart(product);
-                  },
-                  icon: const Icon(Icons.shopping_cart_outlined),
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AddProductAlertDialog(
+                                isAdd: false,
+                                product: product,
+                              );
+                            });
+                      },
+                      icon: const Icon(
+                        Icons.edit,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        context
+                            .read<ProductsController>()
+                            .deleteProduct(product.id);
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        controller.addToCart(product);
+                      },
+                      icon: const Icon(Icons.shopping_cart_outlined),
+                    ),
+                  ],
                 );
         },
       ),

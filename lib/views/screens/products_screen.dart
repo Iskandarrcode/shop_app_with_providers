@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lesson64_statemanagement/controllers/products_controller.dart';
 import 'package:lesson64_statemanagement/models/product.dart';
@@ -10,26 +11,43 @@ import '../widgets/product_item.dart';
 class ProductsScreen extends StatelessWidget {
   ProductsScreen({super.key});
 
-  final productsController = ProductsController();
-
   @override
   Widget build(BuildContext context) {
+    ProductsController productsController =
+        Provider.of<ProductsController>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Mahsulotlar"),
+        title: const Text('Mahsulotlar'),
+        leading: IconButton(
+          onPressed: () {
+            // Navigator.push(
+            //   context,
+            //   CupertinoPageRoute(
+            //     builder: (BuildContext context) => const OrderScreen(),
+            //   ),
+            // );
+          },
+          icon: const Icon(Icons.ac_unit),
+        ),
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (ctx) {
-                    return const CartScreen();
-                  },
-                ),
+              showDialog(
+                context: context,
+                builder: (context) => const AddProductAlertDialog(isAdd: true),
               );
             },
-            icon: const Icon(Icons.shopping_cart),
+            icon: const Icon(Icons.add_circle),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              onPressed: () => Navigator.push(
+                context,
+                CupertinoPageRoute(builder: (context) => const CartScreen()),
+              ),
+              icon: const Icon(Icons.shopping_cart),
+            ),
           ),
         ],
       ),
@@ -40,21 +58,10 @@ class ProductsScreen extends StatelessWidget {
           return ChangeNotifierProvider<Product>.value(
             value: product,
             builder: (context, child) {
-              return const ProductItem();
+              return ProductItem();
             },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const AddProductAlertDialog();
-            },
-          );
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }
